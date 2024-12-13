@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Memories App</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>img { max-width: 100%; }body { font-family: Arial, sans-serif; margin: 0; padding: 0; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; background-color: #f9f9f9; } .container { width: 90%; max-width: 800px; margin-top: 20px; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); text-align: center; } header h1 { font-size: 2em; } .upload-section { margin-bottom: 30px; } form { display: flex; flex-direction: column; align-items: center; } input[type="file"] { margin-bottom: 10px; } button { background-color: #4caf50; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; } button:hover { background-color: #45a049; } .gallery-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 20px; } .file-item img, .file-item video { width: 100%; border-radius: 5px; } .download-btn { display: inline-block; margin-top: 10px; color: #007bff; text-decoration: none; } </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>My Memories</h1>
+      <p>Upload and view your favorite memories.</p>
+    </header>
+    <section class="upload-section">
+      <form id="uploadForm" action="/kirim" method="post" enctype="multipart/form-data">
+        <input type="file" id="fileInput" name="file" required>
+        <button type="submit">Upload File</button>
+      </form>
+      <script type="text/javascript">
+        $(document).ready(function () {
+            $("#uploadForm").submit(function (e) {
+                var formObj = $(this);
+                var formURL = formObj.attr("action");
+                var formData = new FormData(this);
+                $.ajax({
+                    url: formURL,
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    cache: true,
+                    processData: false,
+                    beforeSend: function () {
+                        $("#result").html('Loading...');
+                    },
+                    success: function (data) {
+                        if(data.status) { 
+                          var fileList = document.getElementById('file-list');
+                          const img = document.createElement('img');
+                          img.src = data.imageUrl; // URL gambar dari respons server
+                          fileList.appendChild(img);
+                          return alert ('Berhasil upload') 
+                        }
+                        if(!data.status) return alert ('Gagal upload')
+                    },
+                });
+                e.preventDefault();
+            });
+        });
+    </script>
+    </section>
+    <section id="gallery">
+      <h2>Gallery</h2>
+      <div id="file-list" class="gallery-list">
+        <% for(i of linkgambar) { %>
+        <img src="<%= i %>" alt="">
+        <% } %>
+      </div>
+    </section>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
