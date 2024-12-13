@@ -19,9 +19,14 @@ app.use(express.json());
 var inifilegambar = /*JSON.parse(fs.readFileSync('./inifile.json')) ||*/ []
 
 
-app.get('/', async(req, res) => {
-  res.render('index', { layout: false, linkgambar: inifilegambar})
-})
+app.get('/', async (req, res) => {
+  try {
+    res.render('index', { layout: false, linkgambar: inifilegambar });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Terjadi kesalahan');
+  }
+});
 
 app.post('/kirim', async(req, res) => {
   console.log(req.files)
