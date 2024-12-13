@@ -47,4 +47,6 @@ app.post('/kirim', async(req, res) => {
 app.listen(80, () => {
     console.log('Server berjalan pada http://localhost:3000');
 });
-  
+
+
+module.exports = app
