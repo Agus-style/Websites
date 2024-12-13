@@ -16,7 +16,7 @@ app.use('/assets', express.static('assets'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-var inifilegambar = JSON.parse(fs.readFileSync('./inifile.json')) || []
+var inifilegambar = /*JSON.parse(fs.readFileSync('./inifile.json')) ||*/ []
 
 
 app.get('/', async(req, res) => {
@@ -36,7 +36,7 @@ app.post('/kirim', async(req, res) => {
       var { name, data, mimetype } = req.files.file;
       var kirim = await uplot(data, name)
       inifilegambar.push(kirim.imageUrl)
-      fs.writeFileSync('./inifile.json', JSON.stringify(inifilegambar,null,2))
+      //fs.writeFileSync('./inifile.json', JSON.stringify(inifilegambar,null,2))
       res.send({ status: true, imageUrl: kirim.imageUrl })
     } catch {
       res.send({ status: false })
