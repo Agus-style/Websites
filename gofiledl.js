@@ -1,46 +1,25 @@
-const axios = require("axios");
+const uwu = require('axios');
+const { wrapper } = require('axios-cookiejar-support');
+const { CookieJar } = require('tough-cookie');
+const FormData = require('form-data');
+const jar = new CookieJar();
+var headers = { "User-Agent": 'Mozilla/5.0 (Linux; Android 6.0; HTC One M9 Build/MRA58K) AppleWebKit/534.26 (KHTML, like Gecko)  Chrome/51.0.2561.232 Mobile Safari/536.0', }
+const axios = wrapper(uwu.create({ jar, headers }));
 
-const FormData = require("form-data");
 
-const { fromBuffer } = require("file-type");
+function imgbb(buffer, name) {
+  return new Promise(async(resolve, reject) => {
+    const { data: step1 } = await axios('https://imgbb.com/upload')
+    var token = step1.split('<input type="hidden" name="auth_token" value="')[1].split('"')[0]
+    const form = new FormData()
+    form.append('source', buffer, name);
+    form.append('type', 'file');
+    form.append('action', 'upload');
+    form.append('timestamp', Date.now());
+    form.append('auth_token', token);
+    const { data } = await axios.post('https://imgbb.com/json', form, { headers: { ...form.getHeaders() } })
+    resolve({ imageUrl: data.image.url })
+  })
+}
 
-/**
-
- * Upload image to url
-
- * Supported mimetype:
-
- * - `image/jpeg`
-
- * - `image/jpg`
-
- * - `image/png`s
-
- * @param {Buffer} buffer Image Buffer
-
- */
-var anu = async (buffer, name) => {
-  const { ext, mime } = (await fromBuffer(buffer)) || {};
-
-  const form = new FormData();
-
-  form.append("file", buffer, { filename: `${name}`, contentType: mime });
-
-  try {
-    const { data } = await axios.post(
-      "https://tmpfiles.org/api/v1/upload",
-      form,
-      {
-        headers: form.getHeaders(),
-      },
-    );
-
-    const match = /https?:\/\/tmpfiles.org\/(.*)/.exec(data.data.url);
-
-    return { pageUrl: `https://tmpfiles.org/${match[1]}`, imageUrl: `https://tmpfiles.org/dl/${match[1]}` }
-  } catch (error) {
-    throw error;
-  }
-};
-
-module.exports = anu
+module.exports = imgbb
